@@ -30,15 +30,9 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
 </head>
 <body>
     {{range .}}
-	<form id="" action="./read" method="get">
     <button name="note-title" form=""></button>
-    </form>
-    <form id ="" action="./create" method="post">
     <button name="create" form="">+新規作成</button>
-    </form>
-    <form id="" action="./delete" method="delete">
     <button name="delete" form="">-削除</button>
-    </form>
 	{{- end}}
     <input type="text" id="note-title" name="note-title" placeholder="タイトル">
     <textarea id="note-content" name="note-content" placeholder="内容を入力..."></textarea>
