@@ -32,6 +32,9 @@ func main() {
 		return
 	}
 
+	fs := http.FileServer(http.Dir("./frontend"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", listHundler)
 	http.HandleFunc("/create", createNoteHandler)
 	http.HandleFunc("/update", updateNoteHandler)

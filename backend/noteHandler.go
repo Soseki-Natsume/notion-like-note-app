@@ -26,6 +26,7 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>notion-like-note-app</title>
+	<script type="module" src="/static/main.js"></script>
 </head>
 <body>
     {{range .}}
@@ -38,11 +39,9 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
     <form id="" action="./delete" method="delete">
     <button name="delete" form="">-削除</button>
     </form>
-	{{- end}}    
-    <label for="title">タイトル</label>
-    <textarea name="title"></textarea>
-    <label for="content">内容</label>
-    <textarea name="content"></textarea>
+	{{- end}}
+    <input type="text" id="note-title" name="note-title" placeholder="タイトル">
+    <textarea id="note-content" name="note-content" placeholder="内容を入力..."></textarea>
 </body>
 </html>
 `))
@@ -68,7 +67,7 @@ func listHundler(w http.ResponseWriter, r *http.Request) {
 		}
 		notes = append(notes, n)
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	err = listTmpl.Execute(w, notes)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
