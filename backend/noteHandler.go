@@ -10,14 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
-const notitle = "無題"
-
 type Note struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CreateResponse struct {
+	ID      string `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
@@ -29,13 +33,15 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
 	<script type="module" src="/static/main.js"></script>
 </head>
 <body>
+    <button id="create-btn">+ 新規作成</button>
     {{range .}}
-    <button name="note-title" form=""></button>
-    <button name="create" form="">+新規作成</button>
-    <button name="delete" form="">-削除</button>
+    <button data-id="{{.ID}}" class="select-note-btn">{{if .Title}}{{.Title}}{{else}}{{end}}</button>
+	<button id="delete-btn">- 削除</button>
 	{{- end}}
-    <input type="text" id="note-title" name="note-title" placeholder="タイトル">
-    <textarea id="note-content" name="note-content" placeholder="内容を入力..."></textarea>
+
+	<input type="hidden" id="note-id" value="">
+    <input type="text" id="note-title" placeholder="タイトルを入力...">
+    <textarea id="note-content" placeholder="内容を入力..."></textarea>
 </body>
 </html>
 `))
@@ -45,7 +51,7 @@ func listHundler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	rows, err := db.Query("SELECT title, content FROM note ORDER BY updated_at DESC")
+	rows, err := db.Query("SELECT id, title, content FROM note ORDER BY updated_at DESC")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -55,7 +61,7 @@ func listHundler(w http.ResponseWriter, r *http.Request) {
 	var notes []Note
 	for rows.Next() {
 		var n Note
-		if err := rows.Scan(&n.Title, &n.Content); err != nil {
+		if err := rows.Scan(&n.ID, &n.Title, &n.Content); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -69,6 +75,29 @@ func listHundler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func readNoteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	var n Note
+	err := db.QueryRow("SELECT id, title, content FROM note WHERE id = ?", id).Scan(&n.ID, &n.Title, &n.Content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(n)
+}
+
 func createNoteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -76,10 +105,10 @@ func createNoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newID := uuid.New().String()
-	now := time.Now()
+	now := time.Now().Format("2006-01-02 15:04:05")
 
 	sqlStr := "INSERT INTO note(id, title, content, created_at, updated_at) VALUES(?, ?, ?, ?, ?)"
-	_, err := db.Exec(sqlStr, newID, notitle, "", now, now)
+	_, err := db.Exec(sqlStr, newID, "", "", now, now)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -100,7 +129,7 @@ func updateNoteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	now := time.Now()
+	now := time.Now().Format("2006-01-02 15:04:05")
 
 	sqlStr := "UPDATE note SET title = ?, content = ?, updated_at = ? WHERE id = ?"
 	_, err = db.Exec(sqlStr, note.Title, note.Content, now, note.ID)

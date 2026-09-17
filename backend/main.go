@@ -36,6 +36,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", listHundler)
+	http.HandleFunc("/read", readNoteHandler)
 	http.HandleFunc("/create", createNoteHandler)
 	http.HandleFunc("/update", updateNoteHandler)
 	http.HandleFunc("/delete", deleteNoteHandler)
