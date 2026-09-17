@@ -1,5 +1,5 @@
 .env
-.js
+frontend/main.js
 node_modules
 dist/
 out/
