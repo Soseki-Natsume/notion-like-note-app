@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const activeBtn = document.querySelector(`.select-note-btn[data-id="${note.id}"]`);
             if (activeBtn) {
-                activeBtn.textContent = note.title || "無題";
+                const displayTitle = (data.title || note.title || "").trim();
+                activeBtn.textContent = displayTitle !== "" ? displayTitle.title : "無題";
             }
         } catch (error) {
             console.error('接続エラー', error);
@@ -117,6 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (target.classList.contains("delete-btn")) {
             const id = target.getAttribute("data-id");
             if (!id) return;
+
+            const isConfirmed = window.confirm("削除しますか?");
+            if (!isConfirmed) return;
 
             try {
                 const response = await fetch("/delete", {

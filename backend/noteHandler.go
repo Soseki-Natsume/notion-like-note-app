@@ -36,7 +36,7 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
     <button id="create-btn">+ 新規作成</button>
     {{range .}}
     <button data-id="{{.ID}}" class="select-note-btn">{{if .Title}}{{.Title}}{{else}}{{end}}</button>
-	<button id="delete-btn">- 削除</button>
+	<button data-id="{{.ID}}" class="delete-btn">- 削除</button>
 	{{- end}}
 
 	<input type="hidden" id="note-id" value="">
