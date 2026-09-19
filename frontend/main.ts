@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 if (response.ok) {
-                    const selectBtn = document.querySelector(`.select-note-btn[data-id="$id"]`)
+                    const selectBtn = document.querySelector(`.select-note-btn[data-id="${id}"]`)
                     selectBtn?.remove();
                     target.remove();
 
