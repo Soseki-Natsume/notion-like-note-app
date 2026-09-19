@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const activeBtn = document.querySelector(`.select-note-btn[data-id="${note.id}"]`);
             if (activeBtn) {
                 const displayTitle = (data.title || note.title || "").trim();
-                activeBtn.textContent = displayTitle !== "" ? displayTitle.title : "無題";
+                activeBtn.textContent = displayTitle !== "" ? displayTitle : "無題";
             }
         } catch (error) {
             console.error('接続エラー', error);
