@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	fs := http.FileServer(http.Dir("../frontend"))
+	fs := http.FileServer(http.Dir("./dist"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", listHundler)
