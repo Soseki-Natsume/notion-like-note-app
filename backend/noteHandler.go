@@ -35,7 +35,7 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
 <body>
     <button id="create-btn">+ 新規作成</button>
     {{range .}}
-    <button data-id="{{.ID}}" class="select-note-btn">{{if .Title}}{{.Title}}{{else}}{{end}}</button>
+    <button data-id="{{.ID}}" class="select-note-btn">{{if .Title}}{{.Title}}{{else}}無題{{end}}</button>
 	<button data-id="{{.ID}}" class="delete-btn">- 削除</button>
 	{{- end}}
 
@@ -138,7 +138,7 @@ func updateNoteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"status": "success"}`)
+	json.NewEncoder(w).Encode(note)
 }
 
 func deleteNoteHandler(w http.ResponseWriter, r *http.Request) {
