@@ -25,7 +25,7 @@ COPY . .
 COPY --from=ts-builder /app/dist ./static
 
 # CGO_ENABLED=1 でビルド
-RUN CGO_ENABLED=1 GOOS=linux go build -o app .
+RUN CGO_ENABLED=1 GOOS=linux go build -o app ./backend
 
 # ---------------------------------------------------
 # Stage 3: 実行用軽量イメージ
