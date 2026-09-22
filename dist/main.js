@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		e && t && (t.value = e.id);
 	}), document.body.addEventListener("click", async (e) => {
 		let i = e.target;
-		if (i.classList.contains("select-note-btn")) {
+		if (i?.closest(".select-note-btn")) {
 			let e = i.getAttribute("data-id");
 			if (!e) return;
 			try {

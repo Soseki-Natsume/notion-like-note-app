@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const target = event.target as HTMLElement;
         const selectBtn = target?.closest(".select-note-btn") as HTMLElement | null // spanのnote-nameも可
         if (selectBtn) {
-            const id = target.getAttribute("data-id");
+            const id = selectBtn.getAttribute("data-id");
             if (!id) return;
 
             try {
