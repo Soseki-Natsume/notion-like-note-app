@@ -22,7 +22,7 @@ RUN go mod download
 
 COPY . .
 # Stage 1 でビルドされた JS/CSS などの静的ファイルをコピー
-COPY --from=ts-builder /app/static ./static
+COPY --from=ts-builder /app/dist ./static
 
 # CGO_ENABLED=1 でビルド
 RUN CGO_ENABLED=1 GOOS=linux go build -o app .
@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y ca-certificates sqlite3 && rm -rf /var/
 
 # ビルド成果物と静的ファイルをコピー
 COPY --from=go-builder /app/app .
-COPY --from=go-builder /app/static ./static
+COPY --from=go-builder /app/dist ./static
 
 # SQLite データを保持するボリュームマウント用ディレクトリを作成
 RUN mkdir -p /data
