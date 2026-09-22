@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3" // sqldriverは実際に使用しないため、importして初期化のみする。
 )
@@ -11,12 +12,21 @@ import (
 var db *sql.DB
 
 func main() {
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "./app.db"
+	}
 	var err error
-	db, err = sql.Open("sqlite3", "note.db")
+	db, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	sqlStmt := `CREATE TABLE IF NOT EXISTS note (
 	id TEXT PRIMARY KEY, 
@@ -40,8 +50,8 @@ func main() {
 	http.HandleFunc("/create", createNoteHandler)
 	http.HandleFunc("/update", updateNoteHandler)
 	http.HandleFunc("/delete", deleteNoteHandler)
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Server running on port %s", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 	/*tx, err := db.Begin()
 
