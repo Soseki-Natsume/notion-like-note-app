@@ -1,3 +1,5 @@
+import "./style.css";
+
 interface Note {
     id: string;
     title: string;
@@ -47,26 +49,38 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 throw new Error("新規作成失敗");
             }
-            
+
             const note: Note = await response.json();
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "note-item";
+            itemDiv.setAttribute("data-id", note.id);
 
             const selectBtn = document.createElement("button");
             selectBtn.className = "select-note-btn";
             selectBtn.setAttribute("data-id", note.id);
-            selectBtn.textContent = "無題"
 
-            const deleteBtn = document.createElement("button")
+            const titleSpan = document.createElement("span");
+            titleSpan.className = "note-title-text";
+            titleSpan.textContent = note.title || "無題";
+
+            selectBtn.appendChild(titleSpan);
+
+            const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
             deleteBtn.setAttribute("data-id", note.id);
-            deleteBtn.textContent = "- 削除";
-            
-            if (createBtn) {
-                createBtn.after(selectBtn, deleteBtn);
+            deleteBtn.textContent = "x";
+
+            itemDiv.appendChild(selectBtn);
+            itemDiv.appendChild(deleteBtn);
+
+            const noteList = document.getElementById("note-list");
+            if (noteList) {
+                noteList.prepend(itemDiv);
             }
-            
-            console.log("新規作成成功 ID:", note.id);
+
             return note;
-        } catch (error){
+        } catch (error) {
             console.error("新規作成エラー", error);
             return null;
         }

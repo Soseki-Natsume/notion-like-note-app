@@ -31,17 +31,79 @@ var listTmpl = template.Must(template.New("list").Parse(`<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>notion-like-note-app</title>
 	<script type="module" src="/static/main.js"></script>
+	<link rel="stylesheet" href="/static/notion-like-note-app.css">
 </head>
 <body>
-    <button id="create-btn">+ 新規作成</button>
-    {{range .}}
-    <button data-id="{{.ID}}" class="select-note-btn">{{if .Title}}{{.Title}}{{else}}無題{{end}}</button>
-	<button data-id="{{.ID}}" class="delete-btn">- 削除</button>
-	{{- end}}
+<div class="app">
 
-	<input type="hidden" id="note-id" value="">
-    <input type="text" id="note-title" placeholder="タイトルを入力...">
-    <textarea id="note-content" placeholder="内容を入力..."></textarea>
+    <!-- サイドバー -->
+    <aside class="sidebar">
+
+        <div class="workspace">
+            <div class="workspace-icon">N</div>
+            <div class="workspace-name">UserName</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">Notes</div>
+
+            <button id="create-btn" class="create-btn">
+                <span>＋</span>
+                新規作成
+            </button>
+
+            <div id="note-list" class="note-list">
+                {{range .}}
+
+                <div class="note-item">
+                    <button
+                        data-id="{{.ID}}"
+                        class="select-note-btn"
+                    >
+                        <span class="note-name">
+                            {{if .Title}}{{.Title}}{{else}}無題{{end}}
+                        </span>
+                    </button>
+
+                    <button
+                        data-id="{{.ID}}"
+                        class="delete-btn"
+                        title="削除"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                {{- end}}
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- メインコンテンツ -->
+    <main class="editor">
+
+        <input type="hidden" id="note-id" value="">
+
+        <div class="editor-inner">
+
+            <input
+                type="text"
+                id="note-title"
+                placeholder="タイトルを入力..."
+            >
+
+            <textarea
+                id="note-content"
+                placeholder="内容を入力..."
+            ></textarea>
+
+        </div>
+
+    </main>
+
+</div>	
 </body>
 </html>
 `))
