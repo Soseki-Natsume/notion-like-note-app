@@ -64,9 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		let e = await s();
 		e && t && (t.value = e.id);
 	}), document.body.addEventListener("click", async (e) => {
-		let i = e.target;
-		if (i?.closest(".select-note-btn")) {
-			let e = i.getAttribute("data-id");
+		let i = e.target, a = i?.closest(".select-note-btn");
+		if (a) {
+			let e = a.getAttribute("data-id");
 			if (!e) return;
 			try {
 				let i = await fetch(`/read?id=${e}`);

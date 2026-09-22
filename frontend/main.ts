@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
             selectBtn.setAttribute("data-id", note.id);
 
             const titleSpan = document.createElement("span");
-            titleSpan.className = "note-title-text";
+            titleSpan.className = "note-name";
             titleSpan.textContent = note.title || "無題";
 
             selectBtn.appendChild(titleSpan);
