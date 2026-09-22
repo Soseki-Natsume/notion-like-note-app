@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y ca-certificates sqlite3 && rm -rf /var/
 
 # ビルド成果物と静的ファイルをコピー
 COPY --from=go-builder /app/app .
-COPY --from=go-builder /app/dist ./static
+COPY --from=go-builder /app/dist ./dist
 
 # SQLite データを保持するボリュームマウント用ディレクトリを作成
 RUN mkdir -p /data
