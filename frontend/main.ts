@@ -18,16 +18,16 @@ document.addEventListener("DOMContentLoaded", () => {
     async function saveNote(note: Note): Promise<void>{
         try {
             const response = await fetch("/update", {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json', 
-            }, 
-            body: JSON.stringify(note), 
-        });
-        if (!response.ok) {
-            console.error('保存失敗', response.statusText);
-            return;
-        }
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json', 
+                }, 
+                body: JSON.stringify(note), 
+            });
+            if (!response.ok) {
+                console.error('保存失敗', response.statusText);
+                return;
+            }
             const data = await response.json();
             console.log('保存成功', data);
             
@@ -133,8 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.body.addEventListener("click", async (event) => {
         const target = event.target as HTMLElement;
-
-        if (target.classList.contains("select-note-btn")) {
+        const selectBtn = target?.closest(".select-note-btn") as HTMLElement | null // spanのnote-nameも可
+        if (selectBtn) {
             const id = target.getAttribute("data-id");
             if (!id) return;
 
