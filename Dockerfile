@@ -11,7 +11,7 @@ RUN npm run build
 # ---------------------------------------------------
 # Stage 2: Go アプリのビルド (CGO有効化: SQLite依存のため)
 # ---------------------------------------------------
-FROM golang:1.22 AS go-builder
+FROM golang:latest AS go-builder
 WORKDIR /app
 
 # CGOに必要なビルドツールのインストール
