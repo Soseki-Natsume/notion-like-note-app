@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const noteContentInput = document.getElementById("note-content") as HTMLTextAreaElement | null;
 
     let timeoutID: number | undefined;
+    let isCreating = false;
 
     async function saveNote(note: Note): Promise<void>{
         try {
@@ -38,15 +39,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }    
     }
     
+    async function createNewNote(): Promise<Note | null> {
+        try {
+            const response = await fetch("/create", {
+                method: "POST"
+            });
+            if (!response.ok) {
+                throw new Error("新規作成失敗");
+            }
+            
+            const note: Note = await response.json();
+
+            const selectBtn = document.createElement("button");
+            selectBtn.className = "select-note-btn";
+            selectBtn.setAttribute("data-id", note.id);
+            selectBtn.textContent = "無題"
+
+            const deleteBtn = document.createElement("button")
+            deleteBtn.className = "delete-btn";
+            deleteBtn.setAttribute("data-id", note.id);
+            deleteBtn.textContent = "- 削除";
+            
+            if (createBtn) {
+                createBtn.after(selectBtn, deleteBtn);
+            }
+            
+            console.log("新規作成成功 ID:", note.id);
+            return note;
+        } catch (error){
+            console.error("新規作成エラー", error);
+            return null;
+        }
+    }
+
     function triggerAutoSave(): void {
         if (timeoutID !== undefined) {
             clearTimeout(timeoutID);
         }
 
-        timeoutID = window.setTimeout(() => {
-            const currentID = noteIDInput?.value ?? '';
-            if (!currentID) return // メモ: 空文字もfalsy
+        timeoutID = window.setTimeout(async () => {
+            let currentID = noteIDInput?.value ?? '';
+            if (!currentID) {
+                if (isCreating) return;
+                isCreating = true;
 
+                const newNote = await createNewNote();
+                isCreating = false;
+
+                if (!newNote) return;
+
+                currentID = newNote.id;
+                if (noteIDInput) noteIDInput.value = currentID;
+            }
             const currentTitle = noteTitleInput?.value ?? '';
             const currentContent = noteContentInput?.value ?? '';
 
@@ -63,33 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     createBtn?.addEventListener("click", async () => {
-        try {
-            const response = await fetch("/create", {
-                method: "POST"
-            });
-            if (!response.ok) {
-                throw new Error("新規作成失敗");
-            }
-            
-            const note: Note = await response.json();
-            if (noteIDInput) noteIDInput.value = note.id;
-            if (noteTitleInput) noteTitleInput.value = "";
-            if (noteContentInput) noteContentInput.value = "";
+        if (noteIDInput) noteIDInput.value = "";
+        if (noteTitleInput) noteTitleInput.value = "";
+        if (noteContentInput) noteContentInput.value = "";
 
-            const selectBtn = document.createElement("button");
-            selectBtn.className = "select-note-btn";
-            selectBtn.setAttribute("data-id", note.id);
-            selectBtn.textContent = "無題"
-
-            const deleteBtn = document.createElement("button")
-            deleteBtn.className = "delete-btn";
-            deleteBtn.setAttribute("data-id", note.id);
-            deleteBtn.textContent = "- 削除";
-
-            createBtn.after(selectBtn, deleteBtn);
-            console.log("新規作成成功 ID:", note.id);
-        } catch (error){
-            console.error("新規作成エラー", error);
+        const newNote = await createNewNote();
+        if (newNote && noteIDInput) {
+            noteIDInput.value = newNote.id;
         }
     });
     
